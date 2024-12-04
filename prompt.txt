@@ -1,0 +1,78 @@
+ISSUE THREAD:
+{issue_content}
+
+ANALYSIS TASK:
+Analyze this ROS issue and identify the absolute terminal/leaf nodes where the problem FIRST manifests, using these criteria:
+
+1. Terminal Node Definition:
+- Must be a node with NO downstream dependents in the execution graph
+- Must be the first point where issue symptoms could manifest
+- Must be a component that other nodes depend on, not vice versa
+
+2. Critical Questions:
+- Could any other node show symptoms BEFORE this one?
+- Does this node provide services/actions other nodes depend on?
+- Is this truly where data flow or execution stops?
+- Are there hidden lifecycle or monitoring components?
+- Could the issue manifest in startup/configuration nodes?
+
+3. Terminal Categories to Consider:
+- Lifecycle management nodes
+- Hardware interface nodes
+- Final execution points (goal checkers, validators)
+- State machine terminals
+- Resource management endpoints
+- Diagnostic aggregators
+- Final data consumers
+
+4. Evidence Requirements:
+- Direct log/error messages showing terminal status
+- Component architecture justification
+- Data flow direction proof
+- Startup/initialization order relevance
+- State transition dependencies
+
+RESPONSE FORMAT:
+Provide analysis in this exact JSON structure:
+{{
+  "analysis_timestamp": "string (UTC)",
+  "terminal_nodes": [
+    {{
+      "node_name": "string (EXACT from logs or architecture)",
+      "terminal_classification": "CONFIRMED|HIGHLY_LIKELY|PROBABLE",
+      "terminal_evidence": [
+        "Why this MUST be a terminal node (specific reasons)",
+        "Proof no nodes could show symptoms before this"
+      ],
+      "component_type": "LIFECYCLE|HARDWARE|EXECUTION|STATE|RESOURCE|DIAGNOSTIC|OTHER",
+      "interfaces": {{
+        "subscribers": ["Topics this node subscribes to"],
+        "publishers": ["Topics this node publishes"],
+        "services": ["Services this node provides"],
+        "actions": ["Actions this node handles"],
+        "parameters": ["Critical parameters"]
+      }},
+      "upstream_dependencies": [
+        "Immediate parent nodes that might need investigation"
+      ]
+    }}
+  ],
+  "analysis_confidence": {{
+    "confidence_level": "HIGH|MEDIUM|LOW",
+    "confidence_reasoning": ["List of factors affecting confidence"],
+    "information_gaps": ["Missing information that could affect analysis"]
+  }},
+  "verification_steps": [
+    "Specific steps to verify this is truly terminal",
+    "Tests that could confirm terminal status"
+  ]
+}}
+
+KEY REQUIREMENTS:
+1. Only identify truly terminal nodes (max 3)
+2. Include explicit evidence
+3. Consider initialization order
+4. Account for hidden components
+5. Factor in ROS node lifecycle
+6. Consider distributed system aspects
+7. Prioritize based on direct evidence, architecture, and ROS patterns

@@ -1,21 +1,28 @@
-# GitHub Issue Parser
+# GitHub Issue Analysis Tools
 
-A Python tool for downloading GitHub issues with their complete conversation threads and media attachments.
+Python tools for downloading and analyzing GitHub issues, with special focus on ROS (Robot Operating System) related problems.
 
-## Features
-- Downloads complete issue threads including comments
-- Preserves all images and attachments
-- Creates consolidated markdown files for each issue
-- Handles GitHub asset URL redirects
-- Maintains relative paths for media files
+## Tools
+### Issue Parser
+Downloads complete GitHub issue threads with attachments and conversation history.
+
+### Issue Analyzer
+Processes downloaded issues to identify terminal nodes and failure points in ROS systems.
 
 ## Requirements
 - Python 3.8+
-- `requests` library (install using `pip install requests`)
+- Required packages:
+  ```
+  requests
+  openai
+  tenacity
+  python-dotenv
+  ```
 
 ## Usage
 
-1. Create an input JSON file with GitHub issue URLs:
+### 1. Parse GitHub Issues
+Create an input JSON file with issue URLs:
 ```json
 [
     "https://github.com/owner/repo/issues/123",
@@ -23,28 +30,47 @@ A Python tool for downloading GitHub issues with their complete conversation thr
 ]
 ```
 
-2. Run the script:
+Run the parser:
 ```bash
-python main.py -i input.json -o output -v
+python parser.py -i input.json -o output -v
 ```
 
-Arguments:
-- `-i, --input`: Input JSON file path
+### 2. Analyze Issues
+After parsing, analyze the issues:
+```bash
+python analyzer.py -i output -v
+```
+
+## Arguments
+
+### Parser Arguments
+- `-i, --input`: Input JSON file with issue URLs
 - `-o, --output`: Output directory path
 - `-t, --token`: GitHub token (optional)
 - `-v, --verbose`: Enable verbose output
 
+### Analyzer Arguments
+- `-i, --input`: Directory containing parsed issues
+- `-k, --api-key`: OpenAI API key (or use OPENAI_API_KEY env var)
+- `-p, --prompt`: Path to prompt template (default: prompt.txt)
+- `-m, --model`: Model to use (default: gpt-4o)
+- `-v, --verbose`: Enable verbose output
+
 ## Output Structure
-```bash
+```
 output/
 └── issue_123/
-    ├── issue-full.md      # Consolidated issue thread
-    ├── issue.md           # Original issue
-    ├── metadata.json      # Issue metadata
-    ├── comments/          # Individual comments
-    └── media/            # Downloaded assets
+    ├── issue-full.md        # Consolidated issue thread
+    ├── issue.md            # Original issue
+    ├── metadata.json       # Issue metadata
+    ├── comments/           # Individual comments
+    ├── media/             # Downloaded assets
+    └── analysis/          # Analysis results
+        └── terminal_nodes_analysis_20240304_123456.json
 ```
 
 ## Use Cases
 - Archiving GitHub issues
-- Creating issue datasets for research
+- ROS issue triage
+- System dependency analysis
+- Failure point identification
